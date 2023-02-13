@@ -40,6 +40,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import br.senai.sp.jandira.bmicompose.utils.BMIDescriptionColor
+import br.senai.sp.jandira.bmicompose.utils.BMIDescriptionText
 import br.senai.sp.jandira.bmicompose.utils.bmiCalculate
 import kotlin.math.log
 
@@ -129,6 +131,7 @@ fun BMICalculator() {
 
     }
 
+
     //********************************
     val weightFocusRequest = FocusRequester()
 
@@ -181,13 +184,23 @@ fun BMICalculator() {
                     onValueChange = {
 
                         var lastChar =
-                            if (it.length == 0) it
-                            else
+                            if (it.length == 0) {
+                                isWeightError = true
+                                it
+                            }
+                            else {
+                                isWeightError = false
                                 it.get(it.length - 1)
+                            }
 
                         var newValue =
-                            if (lastChar == '.' || lastChar == ',') it.dropLast(1) else it
-                        weightState = newValue
+                            if (lastChar == '.' || lastChar == ',')
+                                it.dropLast(1)
+
+                            else
+                                it
+                                weightState = newValue
+
 
 
                     },
@@ -195,23 +208,37 @@ fun BMICalculator() {
                         .fillMaxWidth()
                         .focusRequester(weightFocusRequest),
                     leadingIcon = {
-                                  
-                        Icon(imageVector = Icons.Default.DonutLarge, contentDescription = "icone de uma pessoa")
-                                  
+
+                        Icon(
+                            imageVector = Icons.Default.DonutLarge,
+                            contentDescription = "icone de uma pessoa"
+                        )
+
                     },
                     trailingIcon = {
-
-                        Icon(imageVector = Icons.Default.Warning, contentDescription = "Icone de perigo")
+                        if (isWeightError) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "Icone de perigo"
+                            )
+                        }
 
                     },
+
                     isError = isWeightError,
 
-                    
                     shape = RoundedCornerShape(16.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true
                 )
-
+                if (isWeightError){
+                    Text(
+                        text = stringResource(id = R.string.message_weight),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        color = Color.Red,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -229,10 +256,14 @@ fun BMICalculator() {
                     onValueChange = {
 
                         var lastChar =
-                            if (it.length == 0)
+                            if (it.length == 0) {
+                                isHeightError = true
                                 it
-                            else
+                            }
+                            else {
+                                isHeightError = false
                                 it.get(it.length - 1)
+                            }
 
                         var newValue =
                             if (lastChar == '.' || lastChar == ',')
@@ -246,37 +277,51 @@ fun BMICalculator() {
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = {
 
-                        Icon(imageVector = Icons.Default.Height, contentDescription = "icone de uma pessoa")
+                        Icon(
+                            imageVector = Icons.Default.Height,
+                            contentDescription = "icone de uma pessoa"
+                        )
 
                     },
                     trailingIcon = {
-
-                        Icon(imageVector = Icons.Default.Warning, contentDescription = "Icone de perigo")
-
+                        if (isHeightError) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "Icone de perigo"
+                            )
+                        }
                     },
                     isError = isHeightError,
                     shape = RoundedCornerShape(16.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true
                 )
+                if (isHeightError){
+                    Text(
+                        text = stringResource(id = R.string.message_height),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        color = Color.Red,
+                    )
+                }
             }
 
             Button(
+
                 onClick = {
 
-                      isWeightError = weightState.length == 0
+                    isWeightError = weightState.length == 0
 
-                      isHeightError = heightState.length == 0
+                    isHeightError = heightState.length == 0
 
-                    if (isHeightError == false && isWeightError == false){
+                    if (isHeightError == false && isWeightError == false) {
 
                         bmiScoreState = bmiCalculate(weightState.toInt(), heightState.toDouble())
                         expandSate = true
 
                     }
-
-
                 },
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 32.dp)
@@ -305,7 +350,7 @@ fun BMICalculator() {
             Card(
 
                 Modifier.fillMaxHeight(1f),
-                backgroundColor = MaterialTheme.colors.primary,
+                backgroundColor = BMIDescriptionColor(bmiScoreState),
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
 
             ) {
@@ -326,7 +371,7 @@ fun BMICalculator() {
 
                         fontSize = 32.sp,
 
-                    )
+                        )
 
                     Text(
 
@@ -335,10 +380,12 @@ fun BMICalculator() {
 
                     )
 
-                    Text(
-                        text = stringResource
 
-                            (id = R.string.Description_BMI),
+
+                    Text(
+
+
+                        text = BMIDescriptionText(bmiScoreState),
                         fontSize = 28.sp,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center

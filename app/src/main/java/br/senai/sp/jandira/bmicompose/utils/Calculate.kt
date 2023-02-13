@@ -7,3 +7,4 @@ fun bmiCalculate(weight: Int, height: Double): Double = weight / ((height / 100 
 
 
 
+

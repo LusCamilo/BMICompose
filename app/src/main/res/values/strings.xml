@@ -9,4 +9,6 @@
     <string name="Description_BMI">Lorem ipsum dolor sit amet</string>
     <string name="reset">reset</string>
     <string name="share">share</string>
+    <string name="message_weight">the weight is required</string>
+    <string name="message_height">the height is required</string>
 </resources>
